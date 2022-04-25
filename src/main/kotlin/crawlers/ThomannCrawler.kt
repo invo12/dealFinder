@@ -1,8 +1,8 @@
-package products
+package crawlers
 
-import crawlers.Crawler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import products.Product
 
 class ThomannCrawler : Crawler {
 
@@ -13,7 +13,7 @@ class ThomannCrawler : Crawler {
         val fullPrice = extractPrice(doc)
         val (price, currency) = fullPrice.split(" ", limit = 2)
 
-        return Product(url, name, price, currency)
+        return Product(url, name, 0.0, price.toDouble(), currency)
     }
 
     private fun extractName(document: Document): String {

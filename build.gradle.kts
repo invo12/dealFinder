@@ -16,6 +16,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")
     implementation("org.jsoup:jsoup:1.14.3")
+    implementation("org.xerial:sqlite-jdbc:3.36.0.3")
 }
 
 tasks.test {
