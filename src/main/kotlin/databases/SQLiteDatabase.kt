@@ -27,6 +27,8 @@ class SQLiteDatabase : Database {
                 stmt.close()
             } catch (ex: Exception) {
                 System.err.println(errorMessage + ex.message)
+            } finally {
+                it.close()
             }
         }
     }
@@ -44,6 +46,8 @@ class SQLiteDatabase : Database {
                 return true
             } catch (ex: Exception) {
                 System.err.println("Can't create table")
+            } finally {
+                it.close()
             }
         }
 
@@ -69,6 +73,8 @@ class SQLiteDatabase : Database {
                         return getProduct(url)
                     }
                 }
+            } finally {
+                it.close()
             }
         }
 
