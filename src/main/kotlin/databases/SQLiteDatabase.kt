@@ -97,7 +97,7 @@ class SQLiteDatabase : Database {
 
         val conn = connect()
         val sql = "UPDATE products SET oldPrice=${oldProduct.price}, price=${newProduct.price}, " +
-                "lastTime=${newProduct.timestamp} WHERE url='${oldProduct.url}';"
+                "lastTime='${newProduct.timestamp}' WHERE url='${oldProduct.url}';"
         executeDML(conn, sql, "Can't update table")
     }
 
