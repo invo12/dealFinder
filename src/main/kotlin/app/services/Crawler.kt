@@ -1,6 +1,6 @@
-package crawlers
+package app.services
 
-import products.Product
+import app.models.Product
 
 interface Crawler {
 

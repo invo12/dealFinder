@@ -1,6 +1,6 @@
-package databases
+package app.repositories
 
-import products.Product
+import app.models.Product
 import java.sql.*
 import java.time.LocalDate
 

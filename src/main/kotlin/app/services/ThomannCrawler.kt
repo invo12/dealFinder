@@ -1,10 +1,12 @@
-package crawlers
+package app.services
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import products.Product
+import app.models.Product
+import org.springframework.stereotype.Service
 import java.time.LocalDate
 
+@Service
 class ThomannCrawler : Crawler {
 
     override fun getProduct(url: String): Product {

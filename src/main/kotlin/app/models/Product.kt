@@ -1,4 +1,4 @@
-package products
+package app.models
 
 import java.time.LocalDate
 
