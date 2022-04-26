@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import java.time.LocalDate
 
 suspend fun main() = runBlocking(Dispatchers.Default) {
 
@@ -18,8 +19,12 @@ suspend fun main() = runBlocking(Dispatchers.Default) {
     val th = ThomannCrawler()
 
     val urlProductPairs = urls.map { Pair(it, db.getProduct(it)) }
-    val validProducts = urlProductPairs.filter { it.second != null }.map { it.second }
-    val invalidProducts = urlProductPairs.filter { it.second == null }
+    val validProducts = urlProductPairs.filter { it.second != null }
+
+    val now = LocalDate.now()
+
+    val invalidProducts = urlProductPairs.filter { it.second == null } +
+            validProducts.filter { now != it.second?.timestamp }
     println(invalidProducts.size)
 
     val deferredList = invalidProducts.map {

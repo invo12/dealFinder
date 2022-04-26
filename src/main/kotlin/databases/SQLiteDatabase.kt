@@ -2,6 +2,7 @@ package databases
 
 import products.Product
 import java.sql.*
+import java.time.LocalDate
 
 class SQLiteDatabase : Database {
 
@@ -36,7 +37,8 @@ class SQLiteDatabase : Database {
     private fun createTableIfNotExists(conn: Connection?): Boolean {
 
         val sql =
-            "CREATE TABLE IF NOT EXISTS products ( url TEXT, name TEXT, oldPrice REAL, price REAL, currency TEXT);"
+            "CREATE TABLE IF NOT EXISTS products ( url TEXT, name TEXT, oldPrice REAL, price REAL, currency TEXT," +
+                    "lastTime TEXT);"
 
         conn?.let {
             try {
@@ -63,7 +65,8 @@ class SQLiteDatabase : Database {
                 if (rs.next()) {
                     return Product(
                         url, rs.getString("name"), rs.getDouble("oldPrice"),
-                        rs.getDouble("price"), rs.getString("currency")
+                        rs.getDouble("price"), rs.getString("currency"),
+                        LocalDate.parse(rs.getString("lastTime"))
                     )
                 }
 
@@ -84,16 +87,17 @@ class SQLiteDatabase : Database {
     override fun addProduct(product: Product) {
 
         val conn = connect()
-        val sql = "INSERT INTO products (url, name, oldPrice, price, currency) " +
-                "VALUES ('${product.url}', '${product.name}', ${product.oldPrice}, ${product.price}, '${product.currency}');"
+        val sql = "INSERT INTO products (url, name, oldPrice, price, currency, lastTime) " +
+                "VALUES ('${product.url}', '${product.name}', ${product.oldPrice}, ${product.price}, " +
+                "'${product.currency}', '${product.timestamp}');"
         executeDML(conn, sql, "Can't insert into table")
     }
 
     override fun updateProduct(oldProduct: Product, newProduct: Product) {
 
         val conn = connect()
-        val sql = "UPDATE products SET oldPrice=${oldProduct.price}, price=${newProduct.price} " +
-                "WHERE url='${oldProduct.url}';"
+        val sql = "UPDATE products SET oldPrice=${oldProduct.price}, price=${newProduct.price}, " +
+                "lastTime=${newProduct.timestamp} WHERE url='${oldProduct.url}';"
         executeDML(conn, sql, "Can't update table")
     }
 

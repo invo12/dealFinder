@@ -3,6 +3,7 @@ package crawlers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import products.Product
+import java.time.LocalDate
 
 class ThomannCrawler : Crawler {
 
@@ -13,7 +14,7 @@ class ThomannCrawler : Crawler {
         val fullPrice = extractPrice(doc)
         val (price, currency) = fullPrice.split(" ", limit = 2)
 
-        return Product(url, name, 0.0, price.toDouble(), currency)
+        return Product(url, name, 0.0, price.toDouble(), currency, LocalDate.now())
     }
 
     private fun extractName(document: Document): String {
