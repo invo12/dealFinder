@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <th>Link</th>
+    <th>Name</th>
+    <th>Old price</th>
+    <th>New price</th>
+  </tr>
+  <tr *ngFor="let product of products">
+    <a href="{{product.url}}">
+      <td>{{product.name}} </td>
+      <td>{{product.oldPrice}}{{product.currency}}</td>
+      <td>{{product.price}}{{product.currency}}</td>
+    </a>
+  </tr>
+</table>
+

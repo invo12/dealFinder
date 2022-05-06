@@ -4,4 +4,9 @@
   (click)="getProducts()">
   Get products from server
 </button>
-<p>{{message}}</p>
+<div *ngIf="haveData;else noData;">
+  <app-product-table [products]="products"></app-product-table>
+</div>
+<ng-template #noData>
+  <p>Press the button</p>
+</ng-template>

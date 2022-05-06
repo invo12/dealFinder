@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {Product} from "./model/product";
 
 @Component({
   selector: 'app-root',
@@ -8,13 +9,13 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'client';
   message = "";
+  haveData = false
+  products: Product[] = []
 
   getProducts() {
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "text/plain");
-
-    const raw = "https://www.thomann.de/ro/thomann_dp_26.htm";
 
     const requestOptions = {
       method: 'GET',
@@ -24,7 +25,13 @@ export class AppComponent {
 
     fetch("http://localhost:8080/products", requestOptions)
       .then(response => response.text())
-      .then(result => this.message = result)
+      .then(result => this.parseData(result))
       .catch(error => console.log('error', error));
+  }
+
+  parseData(result: string){
+
+    this.products = JSON.parse(result) as Product[]
+    this.haveData = true
   }
 }
