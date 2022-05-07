@@ -33,5 +33,6 @@ export class AppComponent {
 
     this.products = JSON.parse(result) as Product[]
     this.haveData = true
+    document.getElementsByTagName("button")[0].remove();
   }
 }

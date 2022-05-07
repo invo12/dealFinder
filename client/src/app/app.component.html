@@ -1,8 +1,8 @@
-<h1>Hello world</h1>
+<h1>Deal finder</h1>
 <button
   type="button"
   (click)="getProducts()">
-  Get products from server
+  Get products
 </button>
 <div *ngIf="haveData;else noData;">
   <app-product-table [products]="products"></app-product-table>

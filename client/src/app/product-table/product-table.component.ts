@@ -14,4 +14,8 @@ export class ProductTableComponent implements OnInit {
   }
 
   @Input() products: Product[] | undefined;
+
+  goToWebsite(url: string) {
+    window.open(url, '_blank');
+  }
 }

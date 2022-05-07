@@ -1,4 +1,32 @@
+* {
+  font-family: cursive;
+}
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+}
+
 div {
   display: flex;
   justify-content: center;
+  align-items: stretch;
+  flex-grow: 2;
+  width: 70%;
+}
+
+h1, button {
+  color: white;
+  text-align: center;
+}
+button {
+  font-size: 3em;
+  background-color:#1f2839;
+  color: white;
+  border: none;
+  border-radius: 100%;
+  padding: 30px;
 }
