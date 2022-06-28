@@ -17,17 +17,21 @@ table, th, td {
   text-align: center;
   border-collapse: collapse;
 }
+
 td {
   height: 40px;
   width: 30%;
   background-color: #323c50;
 }
+
 table {
   flex-direction: column;
   flex: 3;
   flex-shrink: 0;
   align-items: stretch;
+  text-align: center !important;
 }
+
 tr:hover td {
   background-color:#1f2839;
   cursor: pointer;
@@ -40,4 +44,30 @@ tr:hover td {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  text-align: center;
+}
+
+:host ::ng-deep .mat-sort-header-container {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.positive {
+  color: green;
+  border-color: white;
+}
+
+.negative {
+  color: #ff0033;
+  border-color: white;
+}
+
+td, th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.mat-sort-header-container {
+  justify-content: center !important;
 }

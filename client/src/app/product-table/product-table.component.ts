@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Product} from "../model/product";
+import {Sort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-product-table',
@@ -8,14 +9,46 @@ import {Product} from "../model/product";
 })
 export class ProductTableComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor() {
+    this.products = []
   }
 
-  @Input() products: Product[] | undefined;
+  ngOnInit(): void {
+    console.log(this.products)
+  }
+
+  @Input() products: Product[];
+  columnsToDisplay = ['name', 'oldPrice', 'price'];
 
   goToWebsite(url: string) {
     window.open(url, '_blank');
+  }
+
+  sortData(sort: Sort) {
+    if(this.products != null) {
+      const data = this.products.slice();
+      if (!sort.active || sort.direction === '') {
+        this.products = data;
+        return;
+      }
+
+      this.products = data.sort((a, b) => {
+        const isAsc = sort.direction === 'asc';
+        switch (sort.active) {
+          case 'name':
+            return compare(a.name, b.name, isAsc);
+          case 'oldPrice':
+            return compare(a.oldPrice, b.oldPrice, isAsc);
+          case 'price':
+            return compare(a.price, b.price, isAsc);
+          default:
+            return 0;
+        }
+      });
+    }
+
+    function compare(a: number | string, b: number | string, isAsc: boolean) {
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
   }
 }
