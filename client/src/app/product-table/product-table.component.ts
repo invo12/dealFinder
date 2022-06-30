@@ -17,13 +17,20 @@ export class ProductTableComponent implements OnInit {
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<Product>(this.products)
     this.dataSource.filterPredicate = function (record, filter) {
-      return record.name.toLowerCase().includes(filter.toLowerCase());
+
+      let showReduced = filter.includes("reduced")
+      if(showReduced) {
+        return record.name.toLowerCase().includes(filter.slice(7).toLowerCase())
+          && record.price < record.oldPrice;
+      }
+      return record.name.toLowerCase().includes(filter.toLowerCase())
     }
   }
 
   @Input() products: Product[];
   columnsToDisplay = ['name', 'oldPrice', 'price'];
   dataSource = new MatTableDataSource<Product>()
+  showOnlyReduced = false
 
   goToWebsite(url: string) {
     window.open(url, '_blank');
@@ -31,7 +38,17 @@ export class ProductTableComponent implements OnInit {
 
   search(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const showReduced = this.showOnlyReduced ? "reduced":""
+    this.dataSource.filter = showReduced + filterValue.trim().toLowerCase();
+  }
+
+  showReducedItems(show: boolean) {
+    this.showOnlyReduced = show
+    if(show && !this.dataSource.filter.includes("reduced")) {
+      this.dataSource.filter = "reduced" + this.dataSource.filter;
+    } else {
+      this.dataSource.filter = document.getElementsByTagName("input")[0].value
+    }
   }
 
   sortData(sort: Sort) {

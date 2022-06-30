@@ -5,6 +5,8 @@
   </mat-form-field>
 </div>
 
+<mat-checkbox (change)="showReducedItems($event.checked)">Only reduced</mat-checkbox>
+
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -28,7 +30,7 @@
     *matRowDef="let row; columns: columnsToDisplay;"
   ></tr>
   <tr class="mat-row" *matNoDataRow>
-    <td class="mat-cell" colspan="4">No data matching "{{ input.value }}"</td>
+    <td class="mat-cell" colspan="4">No products found</td>
   </tr>
 </table>
 

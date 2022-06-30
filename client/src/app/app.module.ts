@@ -8,6 +8,7 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatTableModule} from "@angular/material/table";
 import {MatInputModule} from "@angular/material/input";
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import {MatInputModule} from "@angular/material/input";
         MatSortModule,
         MatFormFieldModule,
         MatTableModule,
-        MatInputModule
+        MatInputModule,
+        MatCheckboxModule
     ],
   providers: [],
   bootstrap: [AppComponent]
