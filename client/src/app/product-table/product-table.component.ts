@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Product} from "../model/product";
 import {Sort} from '@angular/material/sort';
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: 'app-product-table',
@@ -14,18 +15,27 @@ export class ProductTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.products)
+    this.dataSource = new MatTableDataSource<Product>(this.products)
+    this.dataSource.filterPredicate = function (record, filter) {
+      return record.name.toLowerCase().includes(filter.toLowerCase());
+    }
   }
 
   @Input() products: Product[];
   columnsToDisplay = ['name', 'oldPrice', 'price'];
+  dataSource = new MatTableDataSource<Product>()
 
   goToWebsite(url: string) {
     window.open(url, '_blank');
   }
 
+  search(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
   sortData(sort: Sort) {
-    if(this.products != null) {
+    if (this.products != null) {
       const data = this.products.slice();
       if (!sort.active || sort.direction === '') {
         this.products = data;

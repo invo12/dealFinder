@@ -2,7 +2,9 @@
   margin-top: 50px;
   width: 100%;
   display: flex;
-  background-color:#1f2839;
+  justify-content: center;
+  flex-direction: column;
+  background-color: transparent;
   color: white;
   font-size: 2em;
 }
@@ -33,7 +35,7 @@ table {
 }
 
 tr:hover td {
-  background-color:#1f2839;
+  background-color: #1f2839;
   cursor: pointer;
 }
 
@@ -70,4 +72,36 @@ td, th {
 
 .mat-sort-header-container {
   justify-content: center !important;
+}
+
+mat-form-field {
+  text-align: center;
+}
+
+#filterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+mat-form-field {
+  flex: 0.5;
+}
+
+:host::ng-deep .mat-input-element {
+  caret-color: white !important;
+}
+
+:host::ng-deep .mat-form-field-label {
+  color: white !important;
+
+}
+
+
+:host::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+  color: white !important;
+}
+
+:host::ng-deep.mat-form-field.mat-focused .mat-form-field-ripple{
+  background-color: white !important;
 }
