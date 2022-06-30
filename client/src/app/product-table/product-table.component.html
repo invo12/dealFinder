@@ -1,12 +1,14 @@
 <div id="filterContainer">
   <mat-form-field class>
     <mat-label>Search product</mat-label>
-    <input matInput (keyup)="search($event)" #input>
+    <input id="searchTable" matInput (keyup)="search($event)" #input>
   </mat-form-field>
 </div>
 
 <mat-checkbox (change)="showReducedItems($event.checked)">Only reduced</mat-checkbox>
 
+<input id="link" type="text">
+<input type="submit" (click)="addProduct()">
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef> Name </th>

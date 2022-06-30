@@ -32,6 +32,14 @@ export class ProductTableComponent implements OnInit {
   dataSource = new MatTableDataSource<Product>()
   showOnlyReduced = false
 
+  addProductToTable(product: string) {
+
+    const newProduct = JSON.parse(product) as Product
+    this.products = [...this.products, newProduct]
+    this.dataSource.data = this.products
+    console.log(this.products)
+  }
+
   goToWebsite(url: string) {
     window.open(url, '_blank');
   }
@@ -47,8 +55,28 @@ export class ProductTableComponent implements OnInit {
     if(show && !this.dataSource.filter.includes("reduced")) {
       this.dataSource.filter = "reduced" + this.dataSource.filter;
     } else {
-      this.dataSource.filter = document.getElementsByTagName("input")[0].value
+      // @ts-ignore
+      this.dataSource.filter = document.getElementById("searchTable").value
     }
+  }
+
+  addProduct() {
+    // @ts-ignore
+    const link = document.getElementById("link").value
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "text/plain");
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: undefined
+    };
+
+    // @ts-ignore
+    fetch("http://localhost:8080/products?websiteLink=" + link, requestOptions)
+      .then(response => response.text())
+      .then(result => this.addProductToTable(result))
+      .catch(error => console.log('error', error));
   }
 
   sortData(sort: Sort) {
