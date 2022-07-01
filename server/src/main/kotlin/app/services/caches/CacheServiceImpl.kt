@@ -3,10 +3,10 @@ package app.services.caches
 import app.models.Product
 import app.repositories.ProductRepo
 import app.services.crawlers.CrawlerService
-import app.services.crawlers.ThomannCrawlerServiceImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -36,5 +36,26 @@ class CacheServiceImpl : CacheService {
                 }
             }
         }.map { it.await() }.toList()
+    }
+
+    override fun getProduct(url: String): Product = runBlocking {
+        val now = LocalDate.now()
+        val product = productRepoImpl.getProduct(url)
+
+        if (product == null || now != product.timestamp) {
+            val webProduct = async(Dispatchers.Default) {
+                try {
+                    thomannCrawlerServiceImpl.getProduct(url)
+                } catch (e: Exception) {
+                    Product()
+                }
+            }.await()
+            if(webProduct.name.isNotEmpty()) {
+                productRepoImpl.addProduct(webProduct)
+            }
+            webProduct
+        } else {
+            product
+        }
     }
 }

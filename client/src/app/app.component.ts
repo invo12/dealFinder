@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {Product} from "./model/product";
+import {Utils} from "./Utils";
 
 @Component({
   selector: 'app-root',
@@ -31,8 +32,8 @@ export class AppComponent {
 
   parseData(result: string){
 
-    this.products = JSON.parse(result) as Product[]
-    this.haveData = true
+    this.products = (JSON.parse(result) as Product[]).map(p => Utils.correctProduct(p));
+    this.haveData = true;
     document.getElementsByTagName("button")[0].remove();
   }
 }

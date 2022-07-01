@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Product} from "../model/product";
 import {Sort} from '@angular/material/sort';
 import {MatTableDataSource} from "@angular/material/table";
+import {Utils} from "../Utils";
 
 @Component({
   selector: 'app-product-table',
@@ -31,13 +32,21 @@ export class ProductTableComponent implements OnInit {
   columnsToDisplay = ['name', 'oldPrice', 'price'];
   dataSource = new MatTableDataSource<Product>()
   showOnlyReduced = false
+  @ViewChild("link", {static: true}) input!: ElementRef;
 
   addProductToTable(product: string) {
 
-    const newProduct = JSON.parse(product) as Product
-    this.products = [...this.products, newProduct]
-    this.dataSource.data = this.products
-    console.log(this.products)
+    try{
+      this.dataSource.data = Utils.addProduct(this.products, Utils.parseProduct(product));
+      this.input.nativeElement.value = "";
+    } catch (e) {
+      this.input.nativeElement.value = "Invalid product";
+    }
+  }
+
+  clear() {
+    if(this.input.nativeElement.value === "Invalid product")
+    this.input.nativeElement.value = "";
   }
 
   goToWebsite(url: string) {
@@ -62,7 +71,7 @@ export class ProductTableComponent implements OnInit {
 
   addProduct() {
     // @ts-ignore
-    const link = document.getElementById("link").value
+    const link = this.input.nativeElement.value;
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "text/plain");
 
