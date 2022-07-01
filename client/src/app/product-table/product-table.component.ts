@@ -16,6 +16,7 @@ export class ProductTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.dataSource = new MatTableDataSource<Product>(this.products)
     this.dataSource.filterPredicate = function (record, filter) {
 
