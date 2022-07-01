@@ -1,14 +1,19 @@
 <div id="filterContainer">
-    <mat-form-field class>
-      <mat-label>Add product</mat-label>
-      <input #link matInput autocomplete="off" (click)="clear()">
-      <br>
-    </mat-form-field>
+  <!--  add   -->
+  <mat-form-field class>
+    <mat-label>Add product</mat-label>
+    <input #link matInput autocomplete="off" (click)="clear()">
+    <br>
+  </mat-form-field>
+
+  <!--  search   -->
   <mat-icon class="icon-display" (click)="addProduct()">arrow_forward_ios</mat-icon>
   <mat-form-field class>
     <mat-label>Search product</mat-label>
     <input id="searchTable" matInput (keyup)="search($event)" #input autocomplete="off">
   </mat-form-field>
+
+  <!--  filter priced   -->
   <mat-checkbox (change)="showReducedItems($event.checked)">Only reduced</mat-checkbox>
 </div>
 
@@ -25,7 +30,12 @@
 
   <ng-container matColumnDef="price">
     <th mat-header-cell *matHeaderCellDef> Price</th>
-    <td mat-cell *matCellDef="let element">{{element.price}}</td>
+    <td mat-cell *matCellDef="let element">
+
+      {{element.price}}
+      <button (click)="$event.stopPropagation();removeElement(element.name)">X</button>
+    </td>
+
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>

@@ -20,7 +20,7 @@ export class ProductTableComponent implements OnInit {
     this.dataSource.filterPredicate = function (record, filter) {
 
       let showReduced = filter.includes("reduced")
-      if(showReduced) {
+      if (showReduced) {
         return record.name.toLowerCase().includes(filter.slice(7).toLowerCase())
           && record.price < record.oldPrice;
       }
@@ -36,8 +36,9 @@ export class ProductTableComponent implements OnInit {
 
   addProductToTable(product: string) {
 
-    try{
-      this.dataSource.data = Utils.addProduct(this.products, Utils.parseProduct(product));
+    try {
+      this.products = Utils.addProduct(this.products, Utils.parseProduct(product));
+      this.dataSource.data = this.products;
       this.input.nativeElement.value = "";
     } catch (e) {
       this.input.nativeElement.value = "Invalid product";
@@ -45,8 +46,8 @@ export class ProductTableComponent implements OnInit {
   }
 
   clear() {
-    if(this.input.nativeElement.value === "Invalid product")
-    this.input.nativeElement.value = "";
+    if (this.input.nativeElement.value === "Invalid product")
+      this.input.nativeElement.value = "";
   }
 
   goToWebsite(url: string) {
@@ -55,13 +56,13 @@ export class ProductTableComponent implements OnInit {
 
   search(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    const showReduced = this.showOnlyReduced ? "reduced":""
+    const showReduced = this.showOnlyReduced ? "reduced" : ""
     this.dataSource.filter = showReduced + filterValue.trim().toLowerCase();
   }
 
   showReducedItems(show: boolean) {
     this.showOnlyReduced = show
-    if(show && !this.dataSource.filter.includes("reduced")) {
+    if (show && !this.dataSource.filter.includes("reduced")) {
       this.dataSource.filter = "reduced" + this.dataSource.filter;
     } else {
       // @ts-ignore
@@ -114,5 +115,12 @@ export class ProductTableComponent implements OnInit {
     function compare(a: number | string, b: number | string, isAsc: boolean) {
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
+
+  }
+
+  removeElement(productName: string) {
+
+    this.products = Utils.removeProduct(this.products, productName);
+    this.dataSource.data = this.products;
   }
 }

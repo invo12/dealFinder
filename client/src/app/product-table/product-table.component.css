@@ -114,3 +114,13 @@ mat-form-field {
 .icon-display {
   transform: scale(2, 1.5);
 }
+
+td button {
+  visibility: hidden;
+  float: right;
+}
+
+tr:hover td button {
+  visibility: visible;
+  right: 0;
+}
