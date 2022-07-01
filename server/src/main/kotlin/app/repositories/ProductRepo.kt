@@ -1,12 +1,9 @@
 package app.repositories
 
 import app.models.Product
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 
-interface ProductRepo {
-
-    fun getProducts(offset: Int, limit: Int): List<Product>
-    fun getProduct(url: String): Product?
-    fun addProduct(product: Product)
-    fun updateProduct(oldProduct: Product, newProduct: Product)
-    fun deleteProduct(product: Product)
-}
+@Repository
+interface ProductRepo: JpaRepository<Product, Long>

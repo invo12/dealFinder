@@ -17,7 +17,7 @@ class ThomannCrawlerServiceImpl : CrawlerService {
         val fullPrice = extractPrice(doc)
         val (price, currency) = fullPrice.split(" ", limit = 2)
 
-        return Product(url, name, 0.0, price.toDouble(), currency, LocalDate.now())
+        return Product(0 ,url, name, 0.0, price.toDouble(), currency, LocalDate.now())
     }
 
     private fun extractName(document: Document): String {
