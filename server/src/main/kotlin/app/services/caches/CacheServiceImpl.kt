@@ -10,7 +10,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Example
 import org.springframework.data.domain.ExampleMatcher
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.exact
 import org.springframework.stereotype.Service
@@ -38,8 +37,6 @@ class CacheServiceImpl : CacheService {
 
         val now = LocalDate.now()
 
-        val products = withContext(Dispatchers.IO) { productRepo.findAll() }
-
         val user = withContext(Dispatchers.IO) {
             try {
                 userRepo.findById(id).get()
@@ -48,23 +45,24 @@ class CacheServiceImpl : CacheService {
             }
         } ?: return@runBlocking listOf()
 
-        products.map {
+        var changed = false
+
+        user.products = user.products.map {
             async(Dispatchers.Default) {
-                if (!it.users.contains(user)) {
-                    it.users.add(user)
-                    withContext(Dispatchers.IO) { productRepo.save(it) }
-                }
                 if (now != it.timestamp) {
+                    changed = true
                     val product = thomannCrawlerServiceImpl.getProduct(it.url)
                     it.oldPrice = product.oldPrice
                     it.price = product.price
                     it.timestamp = product.timestamp
-                    withContext(Dispatchers.IO) { productRepo.save(it) }
-                } else {
-                    it
                 }
+                it
             }
-        }.map { it.await() }.map { it.toDTO() }.toList()
+        }.map { it.await() }.toMutableSet()
+        if(changed) {
+            withContext(Dispatchers.IO) { userRepo.save(user) }
+        }
+        user.products.map { it.toDTO() }.toList()
     }
 
     @Transactional
@@ -112,5 +110,26 @@ class CacheServiceImpl : CacheService {
             withContext(Dispatchers.IO) { productRepo.save(webProduct) }
             return@runBlocking webProduct.toDTO()
         }
+    }
+
+    override fun removeProduct(url: String, id: Long): Boolean = runBlocking {
+
+        withContext(Dispatchers.IO) {
+            try {
+                userRepo.findById(id).get()
+            } catch (e: Exception) {
+                null
+            }
+        } ?: return@runBlocking false
+
+        val product = withContext(Dispatchers.IO) { productRepo.findFirstByUrl(url) } ?: return@runBlocking false
+
+        val length = product.users.size
+        product.users.removeIf { it.id == id }
+        if (length != product.users.size) {
+            withContext(Dispatchers.IO) { productRepo.save(product) }
+            return@runBlocking true
+        }
+        return@runBlocking false
     }
 }

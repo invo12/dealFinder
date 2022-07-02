@@ -27,16 +27,16 @@ export class AppComponent {
       redirect: undefined
     };
 
-    fetch("http://localhost:8080/users?username=invo", requestOptions1)
-      .then(response => response.text())
-      .then(result => localStorage.setItem('userId', result))
-      .catch(error => console.log('error', error));
+    return fetch("http://localhost:8080/users?username=invo", requestOptions1)
+
   }
 
   getUserData() {
 
-    this.getUserId();
-    this.getProducts();
+    this.getUserId().then(response => response.text())
+      .then(result => { localStorage.setItem('userId', result); this.getProducts();})
+      .catch(error => console.log('error', error));
+
   }
 
   getProducts() {

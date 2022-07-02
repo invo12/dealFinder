@@ -1,7 +1,6 @@
 package app.controllers
 
 import app.dto.ProductDTO
-import app.models.Product
 import app.services.caches.CacheService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -30,5 +29,13 @@ class ProductsController {
     fun addProduct(@RequestParam websiteLink: String, @PathVariable id: Long): ProductDTO {
 
         return cacheServiceImpl.getProduct(websiteLink, id)
+    }
+
+    @RequestMapping(value = ["/products/users/{id}"], method = [RequestMethod.DELETE])
+    @CrossOrigin(origins = ["http://localhost:4200"])
+    @ResponseBody
+    fun removeProduct(@RequestParam websiteLink: String, @PathVariable id: Long): Boolean {
+
+        return cacheServiceImpl.removeProduct(websiteLink, id)
     }
 }

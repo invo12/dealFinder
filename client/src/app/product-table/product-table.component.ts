@@ -124,9 +124,24 @@ export class ProductTableComponent implements OnInit {
 
   }
 
-  removeElement(productName: string) {
+  removeElement(url: string) {
 
-    this.products = Utils.removeProduct(this.products, productName);
-    this.dataSource.data = this.products;
+    this.products = Utils.removeProduct(this.products, url);
+    if (this.products.length != this.dataSource.data.length) {
+
+      this.dataSource.data = this.products;
+      localStorage.setItem('products', JSON.stringify(this.products));
+      const requestOptions = {
+        method: 'DELETE',
+        redirect: undefined
+      };
+
+      const userId = localStorage.getItem('userId');
+
+      fetch("http://localhost:8080/products/users/" + userId + "?websiteLink=" + url, requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+    }
   }
 }

@@ -37,7 +37,7 @@ export class Utils {
     return products;
   }
 
-  static removeProduct(products: Product[], productName: string): Product[] {
-    return products.filter(p => p.name !== productName);
+  static removeProduct(products: Product[], url: string): Product[] {
+    return products.filter(p => p.url !== url);
   }
 }
