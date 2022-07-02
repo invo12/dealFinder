@@ -1,8 +1,8 @@
 package app.controllers
 
+import app.dto.ProductDTO
 import app.models.Product
 import app.services.caches.CacheService
-import app.services.crawlers.ThomannCrawlerServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -13,24 +13,22 @@ class ProductsController {
     @Autowired
     private lateinit var cacheServiceImpl: CacheService
 
-    @Autowired
-    private lateinit var thomannCrawlerServiceImpl: ThomannCrawlerServiceImpl;
-
-    @RequestMapping(value = ["/products"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/products/users/{id}"], method = [RequestMethod.GET])
     @CrossOrigin(origins = ["http://localhost:4200"])
     @ResponseBody
     fun getProducts(
         @RequestParam(required = false, defaultValue = "0") offset: Int,
-        @RequestParam(required = false, defaultValue = "10") limit: Int
-    ): List<Product> {
+        @RequestParam(required = false, defaultValue = "10") limit: Int,
+        @PathVariable id: Long
+    ): List<ProductDTO> {
 
-        return cacheServiceImpl.getProducts(offset, limit)
+        return cacheServiceImpl.getProducts(offset, limit, id)
     }
-    @RequestMapping(value = ["/products"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/products/users/{id}"], method = [RequestMethod.POST])
     @CrossOrigin(origins = ["http://localhost:4200"])
     @ResponseBody
-    fun addProduct(@RequestParam websiteLink: String): Product {
+    fun addProduct(@RequestParam websiteLink: String, @PathVariable id: Long): ProductDTO {
 
-        return cacheServiceImpl.getProduct(websiteLink)
+        return cacheServiceImpl.getProduct(websiteLink, id)
     }
 }

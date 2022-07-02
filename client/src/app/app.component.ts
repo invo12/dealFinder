@@ -13,6 +13,32 @@ export class AppComponent {
   haveData = false
   products: Product[] = []
 
+  ngOnInit() {
+
+    if (localStorage.getItem('userId') !== null) {
+      this.haveData = true;
+      this.parseData(localStorage.getItem('products')!)
+    }
+  }
+
+  getUserId() {
+    var requestOptions1 = {
+      method: 'GET',
+      redirect: undefined
+    };
+
+    fetch("http://localhost:8080/users?username=invo", requestOptions1)
+      .then(response => response.text())
+      .then(result => localStorage.setItem('userId', result))
+      .catch(error => console.log('error', error));
+  }
+
+  getUserData() {
+
+    this.getUserId();
+    this.getProducts();
+  }
+
   getProducts() {
 
     const myHeaders = new Headers();
@@ -24,16 +50,22 @@ export class AppComponent {
       redirect: undefined
     };
 
-    fetch("http://localhost:8080/products", requestOptions)
+    const userId = localStorage.getItem('userId');
+
+    fetch("http://localhost:8080/products/users/" + userId, requestOptions)
       .then(response => response.text())
-      .then(result => this.parseData(result))
+      .then(result => {
+        localStorage.setItem('products', result);
+        this.parseData(result);
+      })
       .catch(error => console.log('error', error));
   }
 
-  parseData(result: string){
+  parseData(products: string) {
 
-    this.products = (JSON.parse(result) as Product[]).map(p => Utils.correctProduct(p));
+    this.products = (JSON.parse(products) as Product[]).map(p => Utils.correctProduct(p));
     this.haveData = true;
     document.getElementsByTagName("button")[0].remove();
   }
+
 }

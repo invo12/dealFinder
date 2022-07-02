@@ -1,7 +1,9 @@
 package app.services.caches
 
+import app.dto.ProductDTO
 import app.models.Product
 import app.repositories.ProductRepo
+import app.repositories.UsersRepo
 import app.services.crawlers.CrawlerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -26,64 +28,89 @@ class CacheServiceImpl : CacheService {
     private lateinit var productRepo: ProductRepo
 
     @Autowired
+    private lateinit var userRepo: UsersRepo
+
+    @Autowired
     private lateinit var thomannCrawlerServiceImpl: CrawlerService
 
     @Transactional
-    override fun getProducts(offset: Int, limit: Int): List<Product> = runBlocking {
+    override fun getProducts(offset: Int, limit: Int, id: Long): List<ProductDTO> = runBlocking {
 
         val now = LocalDate.now()
-        val products = withContext(Dispatchers.IO) {
-            productRepo.findAll()
-        }
+
+        val products = withContext(Dispatchers.IO) { productRepo.findAll() }
+
+        val user = withContext(Dispatchers.IO) {
+            try {
+                userRepo.findById(id).get()
+            } catch (e: Exception) {
+                null
+            }
+        } ?: return@runBlocking listOf()
 
         products.map {
             async(Dispatchers.Default) {
+                if (!it.users.contains(user)) {
+                    it.users.add(user)
+                    withContext(Dispatchers.IO) { productRepo.save(it) }
+                }
                 if (now != it.timestamp) {
                     val product = thomannCrawlerServiceImpl.getProduct(it.url)
                     it.oldPrice = product.oldPrice
                     it.price = product.price
                     it.timestamp = product.timestamp
-                    withContext(Dispatchers.IO) {
-                        productRepo.save(it)
-                    }
+                    withContext(Dispatchers.IO) { productRepo.save(it) }
                 } else {
                     it
                 }
             }
-        }.map { it.await() }.toList()
+        }.map { it.await() }.map { it.toDTO() }.toList()
     }
 
     @Transactional
-    override fun getProduct(url: String): Product = runBlocking {
+    override fun getProduct(url: String, id: Long): ProductDTO = runBlocking {
 
         val now = LocalDate.now()
-        val p = Product()
-        p.url = url
-        val productSearch: Example<Product> = Example.of(p, SEARCH_URL_MATCH)
+        val user = withContext(Dispatchers.IO) {
+            try {
+                userRepo.findById(id).get()
+            } catch (e: Exception) {
+                null
+            }
+        } ?: return@runBlocking Product().toDTO()
 
-        var product = productRepo.findOne(productSearch).orElse(null)
+        val product = withContext(Dispatchers.IO) { productRepo.findFirstByUrl(url) }
 
-        if (product == null || now != product.timestamp) {
-            val webProduct = try {
+        if (product != null) {
+
+            if (!product.users.map { it.id }.contains(user.id)) {
+                product.users.add(user)
+                withContext(Dispatchers.IO) { productRepo.save(product) }
+            }
+            if (now == product.timestamp) {
+                return@runBlocking product.toDTO()
+            } else {
+                val webProduct = try {
                     thomannCrawlerServiceImpl.getProduct(url)
                 } catch (e: Exception) {
-                    Product()
+                    return@runBlocking Product().toDTO()
                 }
-            if (webProduct.name.isNotEmpty()) {
-                if (product != null) {
-                    product.price = webProduct.price
-                    product.oldPrice = webProduct.oldPrice
-                    product.timestamp = webProduct.timestamp
-                } else {
-                    product = webProduct
-                }
-                withContext(Dispatchers.IO) {
-                    productRepo.save(product)
-                }
+                product.oldPrice = webProduct.oldPrice
+                product.price = webProduct.price
+                withContext(Dispatchers.IO) { productRepo.save(product) }
+                return@runBlocking product.toDTO()
             }
-            webProduct
         } else {
-            product
+
+            val webProduct = try {
+                thomannCrawlerServiceImpl.getProduct(url)
+            } catch (e: Exception) {
+                return@runBlocking Product().toDTO()
+            }
+
+            webProduct.users = mutableSetOf(user)
+            withContext(Dispatchers.IO) { productRepo.save(webProduct) }
+            return@runBlocking webProduct.toDTO()
         }
     }
 }

@@ -1,5 +1,6 @@
 package app.models
 
+import app.dto.ProductDTO
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import javax.persistence.*
@@ -47,11 +48,19 @@ class Product() {
     @Column(name = "timestamp")
     var timestamp: LocalDate = LocalDate.now()
 
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_product",
         joinColumns = [JoinColumn(name = "product_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")])
     @JsonIgnoreProperties("products")
-    lateinit var users: MutableSet<Product>
+    lateinit var users: MutableSet<User>
+
+    override fun toString(): String {
+        return "$id, $url, $name, $oldPrice, $price, $currency $timestamp"
+    }
+
+    fun toDTO(): ProductDTO {
+        return ProductDTO(url, name, oldPrice, price, currency, timestamp)
+    }
 }

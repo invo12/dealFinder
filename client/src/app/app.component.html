@@ -1,11 +1,12 @@
-<button
-  type="button"
-  (click)="getProducts()">
-  Get products
-</button>
+
 <div *ngIf="haveData;else noData;">
   <app-product-table [products]="products"></app-product-table>
 </div>
 <ng-template #noData>
+  <button
+    type="button"
+    (click)="getUserData()">
+    Get products
+  </button>
   <p>Press the button</p>
 </ng-template>

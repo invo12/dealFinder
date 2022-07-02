@@ -10,7 +10,7 @@
   <mat-icon class="icon-display" (click)="addProduct()">arrow_forward_ios</mat-icon>
   <mat-form-field class>
     <mat-label>Search product</mat-label>
-    <input id="searchTable" matInput (keyup)="search($event)" #input autocomplete="off">
+    <input #searchTable matInput (keyup)="search($event)" #input autocomplete="off">
   </mat-form-field>
 
   <!--  filter priced   -->

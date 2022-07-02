@@ -20,11 +20,15 @@ class User() {
     @Column(name="name")
     var name: String = ""
 
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_product",
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "product_id", referencedColumnName = "id")])
     @JsonIgnoreProperties("users")
     lateinit var products: MutableSet<Product>
+
+    override fun toString(): String {
+        return "$id, $name"
+    }
 }

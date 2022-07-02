@@ -34,12 +34,17 @@ export class ProductTableComponent implements OnInit {
   dataSource = new MatTableDataSource<Product>()
   showOnlyReduced = false
   @ViewChild("link", {static: true}) input!: ElementRef;
+  @ViewChild("searchTable", {static: true}) searchTable!: ElementRef;
 
   addProductToTable(product: string) {
 
     try {
       this.products = Utils.addProduct(this.products, Utils.parseProduct(product));
-      this.dataSource.data = this.products;
+      if (this.dataSource.data.length != this.products.length) {
+        localStorage.setItem('products', JSON.stringify(this.products));
+        this.dataSource.data = this.products;
+      }
+
       this.input.nativeElement.value = "";
     } catch (e) {
       this.input.nativeElement.value = "Invalid product";
@@ -66,13 +71,12 @@ export class ProductTableComponent implements OnInit {
     if (show && !this.dataSource.filter.includes("reduced")) {
       this.dataSource.filter = "reduced" + this.dataSource.filter;
     } else {
-      // @ts-ignore
-      this.dataSource.filter = document.getElementById("searchTable").value
+      this.dataSource.filter = this.searchTable.nativeElement.value
     }
   }
 
   addProduct() {
-    // @ts-ignore
+
     const link = this.input.nativeElement.value;
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "text/plain");
@@ -83,8 +87,9 @@ export class ProductTableComponent implements OnInit {
       redirect: undefined
     };
 
-    // @ts-ignore
-    fetch("http://localhost:8080/products?websiteLink=" + link, requestOptions)
+    const userId = localStorage.getItem('userId')
+
+    fetch("http://localhost:8080/products/users/" + userId + "?websiteLink=" + link, requestOptions)
       .then(response => response.text())
       .then(result => this.addProductToTable(result))
       .catch(error => console.log('error', error));
