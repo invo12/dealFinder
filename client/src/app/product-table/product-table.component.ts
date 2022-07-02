@@ -78,6 +78,11 @@ export class ProductTableComponent implements OnInit {
   addProduct() {
 
     const link = this.input.nativeElement.value;
+    if(this.products.filter(it => it.url === link).length !== 0) {
+      this.input.nativeElement.value = "";
+      return;
+    }
+
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "text/plain");
 

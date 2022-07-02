@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Product} from "./model/product";
 import {Utils} from "./Utils";
 
@@ -8,33 +8,53 @@ import {Utils} from "./Utils";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'client';
-  message = "";
+
   haveData = false
   products: Product[] = []
+  @ViewChild("username", {static: false}) usernameInput!: ElementRef;
 
   ngOnInit() {
 
+    this.haveData = false;
     if (localStorage.getItem('userId') !== null) {
       this.haveData = true;
       this.parseData(localStorage.getItem('products')!)
     }
   }
 
-  getUserId() {
-    var requestOptions1 = {
+  ngAfterViewInit() {
+    console.log('on after view init', this.usernameInput);
+    // this returns null
+  }
+
+  clear() {
+    this.usernameInput.nativeElement.value = "";
+  }
+
+  getUserId(username: string) {
+
+    const requestOptions1 = {
       method: 'GET',
       redirect: undefined
     };
 
-    return fetch("http://localhost:8080/users?username=invo", requestOptions1)
+    return fetch("http://localhost:8080/users?username=" + username, requestOptions1)
 
   }
 
   getUserData() {
 
-    this.getUserId().then(response => response.text())
-      .then(result => { localStorage.setItem('userId', result); this.getProducts();})
+    const username = this.usernameInput.nativeElement.value;
+    if (username === "") {
+      this.haveData = false;
+      return;
+    }
+
+    this.getUserId(username).then(response => response.text())
+      .then(result => {
+        localStorage.setItem('userId', result);
+        this.getProducts();
+      })
       .catch(error => console.log('error', error));
 
   }
@@ -65,7 +85,6 @@ export class AppComponent {
 
     this.products = (JSON.parse(products) as Product[]).map(p => Utils.correctProduct(p));
     this.haveData = true;
-    document.getElementsByTagName("button")[0].remove();
   }
 
 }
